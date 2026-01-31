@@ -3,78 +3,363 @@
 <head>
     <title>Employee Details</title>
     <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            color: #333;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 40px 0 20px;
+        }
+
+        /* Employee card */
+        .employee-card {
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 25px 30px;
+        }
+
+        .employee-card p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+            font-size: 14px;
+        }
+
+        .status-active { background-color: #2ecc71; }    /* zelena */
+        .status-pending { background-color: #f1c40f; }  /* žuta */
+        .status-inactive { background-color: #e74c3c; } /* crvena */
+
+        /* Buttons */
+        button {
+            padding: 10px 18px;
+            font-size: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .next-step-btn { background-color: #3498db; color: white; }
+        .next-step-btn:hover { background-color: #2980b9; }
+
+        .task-complete-btn { background-color: #2ecc71; color: white; }
+        .task-complete-btn:hover { background-color: #27ae60; }
+
+        .task-cancel-btn { background-color: #e74c3c; color: white; }
+        .task-cancel-btn:hover { background-color: #c0392b; }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #ecf0f1; }
+
+        /* Task status badges */
+        .task-status-completed { background-color: #2ecc71; color: white; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+        .task-status-pending { background-color: #f39c12; color: white; padding: 3px 8px; border-radius: 10px; font-weight: 500; }
+
+        /* Add Task Form */
+        .add-task-form {
+            max-width: 700px;
+            margin: 0 auto 40px auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            padding: 25px 30px;
+        }
+
+        .add-task-form label {
+            font-weight: 500;
+        }
+
+        .add-task-form input[type="text"],
+        .add-task-form select {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 15px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        .add-task-form button {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .add-task-form button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+
+        /* Popup for next step */
+        .popup-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            font-size: 14px;
+            z-index: 9999;
+            transition: all 0.3s ease;
+        }
+
+        .popup-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cancel onboarding popup */
+        .cancel-popup {
+            display: none;
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            padding: 12px 16px;
+            z-index: 1000;
+            width: 240px;
+            text-align: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .cancel-popup p { margin: 0 0 8px 0; font-size: 14px; }
+
+        .popup-confirm {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .popup-deny {
+            background-color: #bdc3c7;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .employee-card, .add-task-form { padding: 20px; }
+            th, td { padding: 10px; }
+        }
+    </style>
 </head>
 <body>
 
 <h1>Employee Details</h1>
 
-<p><strong>First Name:</strong> <span th:text="${employee.firstName}"></span></p>
-<p><strong>Last Name:</strong> <span th:text="${employee.lastName}"></span></p>
-<p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
-<p><strong>Department:</strong> <span th:text="${employee.department}"></span></p>
-<p><strong>Position:</strong> <span th:text="${employee.position}"></span></p>
-<p><strong>Start Date:</strong> <span th:text="${employee.startDate}"></span></p>
-<p><strong>Status:</strong> <span th:text="${employee.status}"></span></p>
+<div class="employee-card">
+    <p><strong>First Name:</strong> <span th:text="${employee.firstName}"></span></p>
+    <p><strong>Last Name:</strong> <span th:text="${employee.lastName}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
+    <p><strong>Department:</strong> <span th:text="${employee.department}"></span></p>
+    <p><strong>Position:</strong> <span th:text="${employee.position}"></span></p>
+    <p><strong>Start Date:</strong> <span th:text="${employee.startDate}"></span></p>
+    <p><strong>Status:</strong> <span th:text="${employee.status}"></span></p>
+    <span class="status-badge" th:text="${employee.statusDisplayName}" th:classappend="${employee.statusBadgeClass}"></span>
 
-<!-- NEXT STEP BUTTON -->
-<form th:if="${nextStatus != null}"
-      th:action="@{/employees/{id}/next-step(id=${employee.id})}"
-      method="post">
-    <button type="submit">Move to next onboarding step</button>
-</form>
+    <!-- NEXT STEP BUTTON -->
+    <form id="nextStepForm"
+          th:if="${employee.nextStatus != null}"
+          th:action="@{/employees/{id}/next-step(id=${employee.id})}"
+          method="post">
+        <button type="submit" class="next-step-btn">Next Step</button>
+    </form>
 
-<hr/>
+    <div id="popupMessage" class="popup-message"></div>
 
-<h2>Onboarding Tasks</h2>
+    <!-- CANCEL ONBOARDING BUTTON -->
+    <div style="position: relative; display: inline-block; margin-top: 12px;">
+        <form id="cancelForm"
+              th:if="${employee.status.name() != 'COMPLETED' and employee.status.name() != 'CANCELED'}"
+              th:action="@{/employees/{id}/cancel(id=${employee.id})}" method="post">
+            <button type="button" id="cancelBtn" style="background-color:#e74c3c; color:white;">Cancel onboarding</button>
+        </form>
+        <div id="cancelPopup" class="cancel-popup">
+            <p>Are you sure you want to cancel onboarding?</p>
+            <button id="confirmCancel" class="popup-confirm">Yes</button>
+            <button id="denyCancel" class="popup-deny">No</button>
+        </div>
+    </div>
+</div>
 
-<table border="1" cellpadding="6" cellspacing="0">
+<h2 style="text-align:center;">Onboarding Tasks</h2>
+
+<table>
     <thead>
     <tr>
         <th>Task Name</th>
         <th>Type</th>
         <th>Status</th>
+        <th>Action</th>
     </tr>
     </thead>
     <tbody>
     <tr th:if="${#lists.isEmpty(employee.tasks)}">
-        <td colspan="3">No onboarding tasks assigned.</td>
+        <td colspan="4" style="text-align:center;">No onboarding tasks assigned.</td>
     </tr>
-    <tr th:each="task : ${employee.tasks}">
+    <tr th:each="task : ${employee.tasks}" th:id="'task-' + ${task.id}">
         <td th:text="${task.name}"></td>
         <td th:text="${task.type}"></td>
-        <td th:text="${task.completed ? 'Completed' : 'Pending'}"></td>
         <td>
+                <span th:classappend="${task.completed} ? 'task-status-completed' : 'task-status-pending'"
+                      th:text="${task.completed ? 'Completed' : 'Pending'}">
+                </span>
+        </td>
+        <td>
+            <!-- Mark Completed button -->
             <form th:if="${!task.completed}"
                   th:action="@{/employees/{employeeId}/tasks/{taskId}/complete(employeeId=${employee.id},taskId=${task.id})}"
                   method="post">
-                <button type="submit">Mark Completed</button>
+                <button type="submit" class="task-complete-btn">Mark Completed</button>
             </form>
+
+            <!-- Cancel Task button -->
+            <form th:if="${!task.completed}"
+                  th:action="@{/employees/{employeeId}/tasks/{taskId}/cancel(employeeId=${employee.id},taskId=${task.id})}"
+                  method="post">
+                <button type="submit" class="task-cancel-btn" style="background-color:#e74c3c; color:white;">Cancel Task</button>
+            </form>
+
         </td>
     </tr>
     </tbody>
 </table>
 
-<hr/>
+<h3 style="text-align:center;">Add Onboarding Task</h3>
+<div class="add-task-form">
+    <form th:action="@{/employees/{id}/tasks(id=${employee.id})}" method="post">
+        <label>Task name:</label>
+        <input type="text" name="name" required/>
+        <label>Task type:</label>
+        <select name="type" required>
+            <option th:each="t : ${T(com.example.onboarding.task.OnboardingTaskType).values()}"
+                    th:value="${t.name()}" th:text="${t}"></option>
+        </select>
+        <button type="submit">Add Task</button>
+    </form>
+</div>
 
-<h3>Add Onboarding Task</h3>
+<a href="/employees" class="back-link">← Back to list</a>
 
-<form th:action="@{/employees/{id}/tasks(id=${employee.id})}" method="post">
-    <label>Task name:</label><br/>
-    <input type="text" name="name" required/><br/><br/>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
 
-    <label>Task type:</label><br/>
-    <select name="type" required>
-        <option th:each="t : ${T(com.example.onboarding.task.OnboardingTaskType).values()}"
-                th:value="${t.name()}"
-                th:text="${t}">
-        </option>
-    </select><br/><br/>
+        const popup = document.getElementById('popupMessage');
 
-    <button type="submit">Add Task</button>
-</form>
+        function showPopup(message, type='error') {
+            popup.textContent = message;
+            popup.style.backgroundColor = type === 'error' ? '#f44336' : '#4CAF50';
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3000);
+        }
 
-<br/>
-<a href="/employees">Back to list</a>
+        // NEXT STEP BUTTON AJAX
+        const nextForm = document.getElementById('nextStepForm');
+        if(nextForm){
+            nextForm.addEventListener('submit', function(event){
+                event.preventDefault();
+                fetch(nextForm.action, { method: 'POST', body: new URLSearchParams(new FormData(nextForm)) })
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.status==='error'){ showPopup(data.message,'error'); }
+                        else { showPopup(data.message,'success'); setTimeout(()=>location.reload(),1000); }
+                    })
+                    .catch(()=>showPopup('Something went wrong','error'));
+            });
+        }
+
+        // CANCEL ONBOARDING POPUP
+        const cancelBtn = document.getElementById('cancelBtn');
+        const cancelPopup = document.getElementById('cancelPopup');
+        const confirmCancel = document.getElementById('confirmCancel');
+        const denyCancel = document.getElementById('denyCancel');
+        const cancelForm = document.getElementById('cancelForm');
+
+        cancelBtn.addEventListener('click', ()=> cancelPopup.style.display='block');
+        denyCancel.addEventListener('click', ()=> cancelPopup.style.display='none');
+        confirmCancel.addEventListener('click', ()=> cancelForm.submit());
+        document.addEventListener('click', e=>{if(!cancelPopup.contains(e.target) && e.target!==cancelBtn) cancelPopup.style.display='none';});
+
+    });
+</script>
 
 </body>
 </html>

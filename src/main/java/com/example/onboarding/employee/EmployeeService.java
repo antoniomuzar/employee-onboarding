@@ -43,6 +43,14 @@ public class EmployeeService {
     public void save(Employee employee){
         repository.save(employee);
     }
+
+    public void deactivateEmployee(Long employeeId){
+        Employee employee = repository.findById(employeeId)
+                .orElseThrow(()-> new IllegalArgumentException("Employee not found"));
+
+        employee.setStatus(OnboardingStatus.CANCELED);
+        repository.save(employee);
+    }
 }
 
 

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/employees")
 public class EmployeeController {
@@ -86,13 +89,35 @@ public class EmployeeController {
         return "employees/view";
     }
 
-    @PostMapping("/{id}/next-step")
-    public String moveToNextStep(@PathVariable Long id) {
-        onboardingProcessService.moveToNextStatus(id);
-        return "redirect:/employees/" + id;
+    @PostMapping("/{employeeId}/cancel")
+    public String deactivateEmployee(@PathVariable Long employeeId){
+        employeeService.deactivateEmployee(employeeId);
+        return "redirect:/employees/" + employeeId;
     }
 
-   @PostMapping("/{id}/tasks")
+    @PostMapping("/{employeeId}/tasks/{taskId}/cancel")
+    public String cancelTask(@PathVariable Long employeeId, @PathVariable Long taskId) {
+        onboardingTaskService.cancelTask(employeeId, taskId);
+        return "redirect:/employees/" + employeeId; // vrati na detalje employee
+    }
+
+    @PostMapping("/{id}/next-step")
+    @ResponseBody
+    public Map<String, Object> moveToNextStepAjax(@PathVariable Long id) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            onboardingProcessService.moveToNextStatus(id);
+            response.put("status", "success");
+            response.put("message", "Employee status updated successfully!");
+        } catch (IllegalStateException e) {
+            response.put("status", "error");
+            response.put("message", "You have unfinished tasks. Please finish the tasks before you proceed to the next step.");
+        }
+        return response;
+    }
+
+
+    @PostMapping("/{id}/tasks")
     public String addTask(@PathVariable Long id,
                           @RequestParam String name,
                           @RequestParam OnboardingTaskType type) {
