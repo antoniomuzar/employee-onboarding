@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Employees</title>
+</head>
+<body>
+
+<h1>Employee Onboarding</h1>
+
+<form method="get" th:action="@{/employees}">
+    <input type="text"
+           name="lastName"
+           placeholder="Search by last name"
+           th:value="${lastName}" />
+
+    <select name="status">
+        <option value="">-- All statuses --</option>
+        <option th:each="s : ${statuses}"
+                th:value="${s.name()}"
+                th:text="${s}"
+                th:selected="${s == selectedStatus}">
+        </option>
+    </select>
+
+    <button type="submit">Search</button>
+</form>
+
+<br/>
+
+<table border="1" cellpadding="5">
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Department</th>
+        <th>Status</th>
+        <th>Details</th>
+    </tr>
+
+    <tr th:each="e : ${employees}">
+        <td th:text="${e.firstName + ' ' + e.lastName}"></td>
+        <td th:text="${e.email}"></td>
+        <td th:text="${e.department}"></td>
+        <td th:text="${e.status}"></td>
+        <td>
+            <a th:href="@{/employees/{id}(id=${e.id})}">View</a>
+        </td>
+    </tr>
+</table>
+
+<br/>
+<a href="/employees/new">Add new employee</a>
+
+</body>
+</html>

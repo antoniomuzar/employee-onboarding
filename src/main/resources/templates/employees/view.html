@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Employee Details</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<h1>Employee Details</h1>
+
+<p><strong>First Name:</strong> <span th:text="${employee.firstName}"></span></p>
+<p><strong>Last Name:</strong> <span th:text="${employee.lastName}"></span></p>
+<p><strong>Email:</strong> <span th:text="${employee.email}"></span></p>
+<p><strong>Department:</strong> <span th:text="${employee.department}"></span></p>
+<p><strong>Position:</strong> <span th:text="${employee.position}"></span></p>
+<p><strong>Start Date:</strong> <span th:text="${employee.startDate}"></span></p>
+<p><strong>Status:</strong> <span th:text="${employee.status}"></span></p>
+
+<!-- NEXT STEP BUTTON -->
+<form th:if="${nextStatus != null}"
+      th:action="@{/employees/{id}/next-step(id=${employee.id})}"
+      method="post">
+    <button type="submit">Move to next onboarding step</button>
+</form>
+
+<hr/>
+
+<h2>Onboarding Tasks</h2>
+
+<table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+    <tr>
+        <th>Task Name</th>
+        <th>Type</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(employee.tasks)}">
+        <td colspan="3">No onboarding tasks assigned.</td>
+    </tr>
+    <tr th:each="task : ${employee.tasks}">
+        <td th:text="${task.name}"></td>
+        <td th:text="${task.type}"></td>
+        <td th:text="${task.completed ? 'Completed' : 'Pending'}"></td>
+        <td>
+            <form th:if="${!task.completed}"
+                  th:action="@{/employees/{employeeId}/tasks/{taskId}/complete(employeeId=${employee.id},taskId=${task.id})}"
+                  method="post">
+                <button type="submit">Mark Completed</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<hr/>
+
+<h3>Add Onboarding Task</h3>
+
+<form th:action="@{/employees/{id}/tasks(id=${employee.id})}" method="post">
+    <label>Task name:</label><br/>
+    <input type="text" name="name" required/><br/><br/>
+
+    <label>Task type:</label><br/>
+    <select name="type" required>
+        <option th:each="t : ${T(com.example.onboarding.task.OnboardingTaskType).values()}"
+                th:value="${t.name()}"
+                th:text="${t}">
+        </option>
+    </select><br/><br/>
+
+    <button type="submit">Add Task</button>
+</form>
+
+<br/>
+<a href="/employees">Back to list</a>
+
+</body>
+</html>
