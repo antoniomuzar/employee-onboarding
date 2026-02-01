@@ -232,9 +232,14 @@
     <p><strong>Department:</strong> <span th:text="${employee.department}"></span></p>
     <p><strong>Position:</strong> <span th:text="${employee.position}"></span></p>
     <p><strong>Start Date:</strong> <span th:text="${employee.startDate}"></span></p>
-    <p><strong>Status:</strong> <span th:text="${employee.status}"></span></p>
-    <span class="status-badge" th:text="${employee.statusDisplayName}" th:classappend="${employee.statusBadgeClass}"></span>
-
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <strong>Status:</strong>
+        <span th:text="${employee.status}"></span>
+        <span class="status-badge"
+              th:text="${employee.statusDisplayName}"
+              th:classappend="${employee.statusBadgeClass}">
+    </span>
+    </div>
     <!-- NEXT STEP BUTTON -->
     <form id="nextStepForm"
           th:if="${employee.nextStatus != null}"
