@@ -1,6 +1,6 @@
 ## Employee Onboarding Application
 
-This project is a simple Employee Onboarding web application developed as part of a job application assignment for an Appian Developer position at End2End.
+This project is a simple Employee Onboarding web application developed in Appian style of development.
 
 The goal of the application is to demonstrate a clear and meaningful approach to the employee onboarding business process, rather than focusing on excessive functionality or cutting-edge technologies.
 
